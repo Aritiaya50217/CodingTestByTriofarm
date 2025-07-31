@@ -43,5 +43,10 @@ func InitDB(dsn string) (*gorm.DB, error) {
 		}
 	}
 
+	err = db.AutoMigrate(&domain.Medicines{})
+	if err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
+
 	return db, nil
 }

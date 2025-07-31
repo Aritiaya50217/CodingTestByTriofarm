@@ -13,11 +13,11 @@ type TopicHandler struct {
 	topicUsecase usecase.TopicUsecase
 }
 
-func NewTopicHandler(r *gin.Engine, topicUsecase usecase.TopicUsecase) {
+func NewTopicHandler(r *gin.Engine, topicUsecase usecase.TopicUsecase, api *gin.RouterGroup) {
 	handler := &TopicHandler{topicUsecase: topicUsecase}
-	r.GET("/topics", handler.ListTopics)
-	r.POST("/topic", handler.CreateTopic)
-	r.DELETE("/topic/:id", handler.DeleteTopic)
+	api.GET("/topics", handler.ListTopics)
+	api.POST("/topic", handler.CreateTopic)
+	api.DELETE("/topic/:id", handler.DeleteTopic)
 }
 
 func (h *TopicHandler) ListTopics(c *gin.Context) {
