@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
 	"gorm.io/gorm"
 )
@@ -9,6 +11,7 @@ type TopicRepository interface {
 	GetAll() ([]domain.Topic, error)
 	CreateTopic(topic *domain.Topic) error
 	GetTopicName(name string) (*domain.Topic, error)
+	DeleteTopic(id uint) error
 }
 
 type topicRepository struct {
@@ -35,6 +38,17 @@ func (r *topicRepository) GetTopicName(name string) (*domain.Topic, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &topic, nil
+}
+
+func (r *topicRepository) DeleteTopic(id uint) error {
+	result := r.db.Delete(&domain.Topic{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("topic with ID %d not found", id)
+	}
+	return nil
 }

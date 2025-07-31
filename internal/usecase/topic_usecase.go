@@ -10,6 +10,7 @@ import (
 type TopicUsecase interface {
 	ListTopics() ([]domain.Topic, error)
 	CreateTopic(user *domain.Topic) error
+	DeleteTopic(id uint) error
 }
 
 type topicUsecase struct {
@@ -31,4 +32,8 @@ func (uc *topicUsecase) CreateTopic(topic *domain.Topic) error {
 		return errors.New("name already exists")
 	}
 	return uc.topicRepo.CreateTopic(topic)
+}
+
+func (us *topicUsecase) DeleteTopic(id uint) error {
+	return us.topicRepo.DeleteTopic(id)
 }
