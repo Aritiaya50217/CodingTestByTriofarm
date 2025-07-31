@@ -8,10 +8,10 @@ import (
 )
 
 type TopicHandler struct {
-	topicUsecase *usecase.TopicUsecase
+	topicUsecase usecase.TopicUsecase
 }
 
-func NewTopicHandler(r *gin.Engine, topicUsecase *usecase.TopicUsecase) {
+func NewTopicHandler(r *gin.Engine, topicUsecase usecase.TopicUsecase) {
 	handler := &TopicHandler{topicUsecase: topicUsecase}
 	r.GET("/topics", handler.ListTopics)
 }

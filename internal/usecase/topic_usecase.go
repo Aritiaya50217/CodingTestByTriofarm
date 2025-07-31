@@ -5,14 +5,19 @@ import (
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/repository"
 )
 
-type TopicUsecase struct {
-	repo repository.TopicRepository
+type TopicUsecase interface {
+	ListTopics() ([]domain.Topic, error)
+	// CreateUser(user *domain.Topic) error
 }
 
-func NewTopicUsecase(repo repository.TopicRepository) *TopicUsecase {
-	return &TopicUsecase{repo: repo}
+type topicUsecase struct {
+	topicRepo repository.TopicRepository
 }
 
-func (uc *TopicUsecase) ListTopics() ([]domain.Topic, error) {
-	return uc.repo.GetAll()
+func NewTopicUsecase(repo repository.TopicRepository) TopicUsecase {
+	return &topicUsecase{topicRepo: repo}
+}
+
+func (uc *topicUsecase) ListTopics() ([]domain.Topic, error) {
+	return uc.topicRepo.GetAll()
 }
