@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 )
@@ -21,4 +22,13 @@ func LoadConfig() Config {
 	return Config{
 		DSN: dsn,
 	}
+}
+
+func SetTimeZone() {
+	loc, err := time.LoadLocation("Asia/Bangkok")
+	if err != nil {
+		log.Fatalf("failed to load location: %v", err)
+	}
+
+	time.Local = loc
 }

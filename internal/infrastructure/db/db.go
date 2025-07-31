@@ -3,7 +3,6 @@ package db
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
 	"gorm.io/driver/sqlserver"
@@ -26,23 +25,16 @@ func InitDB(dsn string) (*gorm.DB, error) {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
-	// Check if default user exists; if not, create one
+	// Check if default topic exists; if not, create one
 	var count int64
 	db.Model(&domain.Topic{}).Count(&count)
 
-	loc, err := time.LoadLocation("Asia/Bangkok")
-	if err != nil {
-		log.Fatalf("failed to load location: %v", err)
-	}
-
-	now := time.Now().In(loc)
-
 	if count == 0 {
 		defaultTopic := []domain.Topic{
-			{Name: domain.Medicine, CreatedAt: now, UpdatedAt: now},
-			{Name: domain.Vitamins, CreatedAt: now, UpdatedAt: now},
-			{Name: domain.Microorganisms, CreatedAt: now, UpdatedAt: now},
-			{Name: domain.Brands, CreatedAt: now, UpdatedAt: now},
+			{Name: domain.Medicine},
+			{Name: domain.Vitamins},
+			{Name: domain.Microorganisms},
+			{Name: domain.Brands},
 		}
 		if err := db.Create(&defaultTopic).Error; err != nil {
 			log.Printf("failed to create default topic: %v", err)

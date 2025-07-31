@@ -7,7 +7,8 @@ import (
 
 type TopicRepository interface {
 	GetAll() ([]domain.Topic, error)
-	// CreateTopic(name string) (domain.Topic, error)
+	CreateTopic(topic *domain.Topic) error
+	GetTopicName(name string) (*domain.Topic, error)
 }
 
 type topicRepository struct {
@@ -24,6 +25,16 @@ func (r *topicRepository) GetAll() ([]domain.Topic, error) {
 	return topics, err
 }
 
-// func (r *topicRepository) CreateTopic(name string) (*domain.Topic, error) {
-// 	return r.db.Craete(topic).Error
-// }
+func (r *topicRepository) CreateTopic(topic *domain.Topic) error {
+	return r.db.Create(&topic).Error
+}
+
+func (r *topicRepository) GetTopicName(name string) (*domain.Topic, error) {
+	var topic domain.Topic
+	err := r.db.Where("name = ?", name).First(&topic).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &topic, nil
+}
