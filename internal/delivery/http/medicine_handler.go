@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
+	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/response"
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/usecase"
 	"github.com/gin-gonic/gin"
 )
@@ -15,6 +16,7 @@ type MedicineHandler struct {
 func NewMedicineHandler(r *gin.Engine, u usecase.MedicineUsecase, api *gin.RouterGroup) {
 	handler := &MedicineHandler{usecase: u}
 	api.POST("/medicines", handler.CreateMedicine)
+	api.GET("/medicines", handler.GetAllMedicine)
 }
 
 func (h *MedicineHandler) CreateMedicine(c *gin.Context) {
@@ -42,4 +44,21 @@ func (h *MedicineHandler) CreateMedicine(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, medicine)
+}
+
+func (h *MedicineHandler) GetAllMedicine(c *gin.Context) {
+	medicines, err := h.usecase.GetAllMedicines()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get medicines"})
+		return
+	}
+	var result []response.MedicineRes
+	for _, medicine := range medicines {
+		result = append(result, response.MedicineRes{
+			ID:      medicine.ID,
+			Name:    medicine.Name,
+			TopicID: medicine.TopicID,
+		})
+	}
+	c.JSON(http.StatusOK, result)
 }

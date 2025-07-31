@@ -11,6 +11,7 @@ type MedicineUsecase interface {
 	CreateMedicine(medicines *domain.Medicines) error
 	PreloadTopic(medicine *domain.Medicines) error
 	GetMaxIndex() (int, error)
+	GetAllMedicines() ([]domain.Medicines, error)
 }
 
 type medicineUsecase struct {
@@ -37,4 +38,8 @@ func (uc *medicineUsecase) PreloadTopic(medicine *domain.Medicines) error {
 
 func (uc *medicineUsecase) GetMaxIndex() (int, error) {
 	return uc.medicineRepo.GetMaxIndex()
+}
+
+func (us *medicineUsecase) GetAllMedicines() ([]domain.Medicines, error) {
+	return us.medicineRepo.GetAll()
 }

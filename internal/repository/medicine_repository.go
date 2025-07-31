@@ -12,6 +12,7 @@ type MedicineRepository interface {
 	GetMedicineName(name string) (*domain.Medicines, error)
 	PreloadTopic(medicine *domain.Medicines) error
 	GetMaxIndex() (int, error)
+	GetAll() ([]domain.Medicines, error)
 }
 
 type medicineRepository struct {
@@ -52,4 +53,16 @@ func (r *medicineRepository) GetMaxIndex() (int, error) {
 		return int(result.Int64), nil
 	}
 	return 0, nil
+}
+
+func (r *medicineRepository) GetAll() ([]domain.Medicines, error) {
+	var medicines []domain.Medicines
+	err := r.db.Model(&domain.Medicines{}).
+		Select("id, name, topic_id").
+		Find(&medicines).Error
+	if err != nil {
+		return nil, err
+	}
+	return medicines, nil
+
 }

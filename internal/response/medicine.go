@@ -1,0 +1,7 @@
+package response
+
+type MedicineRes struct {
+	ID      int    `json:"id"`
+	Name    string `json:"name"`
+	TopicID uint   `json:"topic_id"`
+}
