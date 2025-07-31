@@ -13,7 +13,7 @@ type TopicHandler struct {
 
 func NewTopicHandler(r *gin.Engine, topicUsecase *usecase.TopicUsecase) {
 	handler := &TopicHandler{topicUsecase: topicUsecase}
-	r.GET("/users", handler.ListTopics)
+	r.GET("/topics", handler.ListTopics)
 }
 
 func (h *TopicHandler) ListTopics(c *gin.Context) {

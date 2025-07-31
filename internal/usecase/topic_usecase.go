@@ -1,12 +1,15 @@
 package usecase
 
-import "github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
+import (
+	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
+	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/repository"
+)
 
 type TopicUsecase struct {
-	repo domain.TopicRepository
+	repo repository.TopicRepository
 }
 
-func NewTopicUsecase(repo domain.TopicRepository) *TopicUsecase {
+func NewTopicUsecase(repo repository.TopicRepository) *TopicUsecase {
 	return &TopicUsecase{repo: repo}
 }
 

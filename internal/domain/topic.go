@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 const (
 	Medicine       = "ยา"
@@ -14,8 +16,4 @@ type Topic struct {
 	Name      string    `json:"name"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
-}
-
-type TopicRepository interface {
-	GetAll() ([]Topic, error)
 }
