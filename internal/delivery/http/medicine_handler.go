@@ -58,6 +58,7 @@ func (h *MedicineHandler) GetAllMedicine(c *gin.Context) {
 			ID:      medicine.ID,
 			Name:    medicine.Name,
 			TopicID: medicine.TopicID,
+			Index:   medicine.Index,
 		})
 	}
 	c.JSON(http.StatusOK, result)

@@ -58,7 +58,8 @@ func (r *medicineRepository) GetMaxIndex() (int, error) {
 func (r *medicineRepository) GetAll() ([]domain.Medicines, error) {
 	var medicines []domain.Medicines
 	err := r.db.Model(&domain.Medicines{}).
-		Select("id, name, topic_id").
+		Select("id, name, topic_id,[index]").
+		Order("[index] ASC").
 		Find(&medicines).Error
 	if err != nil {
 		return nil, err
