@@ -58,5 +58,9 @@ func InitDB(dsn string) (*gorm.DB, error) {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
+	err = db.AutoMigrate(&domain.Brands{})
+	if err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
 	return db, nil
 }
