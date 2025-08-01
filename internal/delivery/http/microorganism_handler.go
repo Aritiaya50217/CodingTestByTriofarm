@@ -19,6 +19,8 @@ func NewMicroorganismHandler(r *gin.Engine, u usecase.MicroorganismUsecase, api 
 	api.POST("/microorganism", handler.CreateMicroorganism)
 	api.GET("/microorganisms", handler.GetAllMicroorganism)
 	api.POST("/microorganism/:id", handler.UpdateMicroorganism)
+	api.DELETE("/microorganism/:id", handler.DeleteMicroorganism)
+	api.POST("/swap/microorganisms", handler.SwapMicroorganisms)
 }
 
 func (h *MicroorganismHandler) CreateMicroorganism(c *gin.Context) {
@@ -103,4 +105,42 @@ func (h *MicroorganismHandler) UpdateMicroorganism(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Microorganism updated successfully"})
+}
+
+func (h *MicroorganismHandler) DeleteMicroorganism(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	_, err = h.usecase.GetMicroorganismByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.usecase.DeleteMicroorganism(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Microorganism deleted successfully"})
+}
+
+func (h *MicroorganismHandler) SwapMicroorganisms(c *gin.Context) {
+	var microorganisms []domain.Microorganisms
+
+	if err := c.ShouldBindJSON(&microorganisms); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := h.usecase.SwapMicroorganisms(microorganisms)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update Microorganisms"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Microorganisms updated successfully"})
 }

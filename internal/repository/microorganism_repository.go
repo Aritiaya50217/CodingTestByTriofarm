@@ -14,6 +14,8 @@ type MicroorganismRepository interface {
 	GetAll() ([]domain.Microorganisms, error)
 	UpdateMicroorganism(microorganism *domain.Microorganisms) error
 	GetMicroorganismByID(id int) (*domain.Microorganisms, error)
+	DeleteMicroorganism(id int) error
+	SwapMicroorganisms(microorganism []domain.Microorganisms) error
 }
 
 type microorganismsRepository struct {
@@ -82,4 +84,25 @@ func (r *microorganismsRepository) GetMicroorganismByID(id int) (*domain.Microor
 		return nil, err
 	}
 	return &microorganism, nil
+}
+
+func (r *microorganismsRepository) DeleteMicroorganism(id int) error {
+	return r.db.Delete(&domain.Microorganisms{}, id).Error
+}
+
+func (r *microorganismsRepository) SwapMicroorganisms(microorganisms []domain.Microorganisms) error {
+	tx := r.db.Begin()
+
+	for _, microorganism := range microorganisms {
+		if err := tx.Model(&domain.Microorganisms{}).
+			Where("id = ?", microorganism.ID).
+			Updates(domain.Microorganisms{
+				Index: microorganism.Index,
+			}).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+	}
+	return tx.Commit().Error
 }
