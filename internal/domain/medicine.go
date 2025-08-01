@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type Medicines struct {
-	ID        int       `gorm:"primaryKey" json:"id"`
+	ID        int       `gorm:"primaryKey" json:"id" `
 	Name      string    `json:"name"`
 	TopicID   uint      `json:"topic_id"` // Foreign Key
 	Topic     Topic     `gorm:"foreignKey:TopicID"`

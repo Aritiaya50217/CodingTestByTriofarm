@@ -2,6 +2,7 @@ package http
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/response"
@@ -17,6 +18,7 @@ func NewMedicineHandler(r *gin.Engine, u usecase.MedicineUsecase, api *gin.Route
 	handler := &MedicineHandler{usecase: u}
 	api.POST("/medicines", handler.CreateMedicine)
 	api.GET("/medicines", handler.GetAllMedicine)
+	api.POST("/medicines/:id", handler.UpdateMedicine)
 }
 
 func (h *MedicineHandler) CreateMedicine(c *gin.Context) {
@@ -62,4 +64,58 @@ func (h *MedicineHandler) GetAllMedicine(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, result)
+}
+
+func (h *MedicineHandler) UpdateMedicine(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	// Bind JSON เข้ากับ struct
+	var medicine domain.Medicines
+	if err := c.ShouldBindJSON(&medicine); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err = h.usecase.GetMedicineByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	medicine.ID = id
+
+	if err := h.usecase.UpdateMedicine(&medicine); err != nil {
+
+		if err.Error() == "name already exists" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update medicine"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Medicine updated successfully"})
+}
+
+func (h *MedicineHandler) GetMedicineByID(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	medicine, err := h.usecase.GetMedicineByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Medicine not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, medicine)
 }

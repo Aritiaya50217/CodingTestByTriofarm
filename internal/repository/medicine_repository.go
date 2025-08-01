@@ -13,6 +13,9 @@ type MedicineRepository interface {
 	PreloadTopic(medicine *domain.Medicines) error
 	GetMaxIndex() (int, error)
 	GetAll() ([]domain.Medicines, error)
+	UpdateMedicine(medicine *domain.Medicines) error
+	GetMedicineByName(name string) (*domain.Medicines, error)
+	GetMedicineByID(id int) (*domain.Medicines, error)
 }
 
 type medicineRepository struct {
@@ -66,4 +69,30 @@ func (r *medicineRepository) GetAll() ([]domain.Medicines, error) {
 	}
 	return medicines, nil
 
+}
+
+func (r *medicineRepository) UpdateMedicine(medicine *domain.Medicines) error {
+	err := r.db.Model(&domain.Medicines{}).Where("id = ? ", medicine.ID).Updates(domain.Medicines{Name: medicine.Name}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *medicineRepository) GetMedicineByName(name string) (*domain.Medicines, error) {
+	var medicine domain.Medicines
+	err := r.db.Where("name = ?", name).First(&medicine).Error
+	if err != nil {
+		return nil, err
+	}
+	return &medicine, nil
+}
+
+func (r *medicineRepository) GetMedicineByID(id int) (*domain.Medicines, error) {
+	var medicine domain.Medicines
+	err := r.db.Preload("Topic").Where("id = ?", id).First(&medicine).Error
+	if err != nil {
+		return nil, err
+	}
+	return &medicine, nil
 }
