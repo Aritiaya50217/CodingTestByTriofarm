@@ -16,6 +16,7 @@ type MedicineRepository interface {
 	UpdateMedicine(medicine *domain.Medicines) error
 	GetMedicineByName(name string) (*domain.Medicines, error)
 	GetMedicineByID(id int) (*domain.Medicines, error)
+	DeleteMedicine(id int) error
 }
 
 type medicineRepository struct {
@@ -95,4 +96,8 @@ func (r *medicineRepository) GetMedicineByID(id int) (*domain.Medicines, error) 
 		return nil, err
 	}
 	return &medicine, nil
+}
+
+func (r *medicineRepository) DeleteMedicine(id int) error {
+	return r.db.Delete(&domain.Medicines{}, id).Error
 }

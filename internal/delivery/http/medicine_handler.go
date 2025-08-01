@@ -19,6 +19,7 @@ func NewMedicineHandler(r *gin.Engine, u usecase.MedicineUsecase, api *gin.Route
 	api.POST("/medicines", handler.CreateMedicine)
 	api.GET("/medicines", handler.GetAllMedicine)
 	api.POST("/medicines/:id", handler.UpdateMedicine)
+	api.DELETE("/medicines/:id", handler.DeleteMedicine)
 }
 
 func (h *MedicineHandler) CreateMedicine(c *gin.Context) {
@@ -95,7 +96,7 @@ func (h *MedicineHandler) UpdateMedicine(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		
+
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update medicine"})
 		return
 	}
@@ -118,4 +119,26 @@ func (h *MedicineHandler) GetMedicineByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, medicine)
+}
+
+func (h *MedicineHandler) DeleteMedicine(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	_, err = h.usecase.GetMedicineByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.usecase.DeleteMedicine(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Medicine deleted successfully"})
 }

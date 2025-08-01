@@ -14,6 +14,7 @@ type MedicineUsecase interface {
 	GetAllMedicines() ([]domain.Medicines, error)
 	UpdateMedicine(medicine *domain.Medicines) error
 	GetMedicineByID(id int) (*domain.Medicines, error)
+	DeleteMedicine(id int) error
 }
 
 type medicineUsecase struct {
@@ -57,4 +58,8 @@ func (u *medicineUsecase) UpdateMedicine(medicine *domain.Medicines) error {
 
 func (u *medicineUsecase) GetMedicineByID(id int) (*domain.Medicines, error) {
 	return u.medicineRepo.GetMedicineByID(id)
+}
+
+func (u *medicineUsecase) DeleteMedicine(id int) error {
+	return u.medicineRepo.DeleteMedicine(id)
 }
