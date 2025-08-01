@@ -32,9 +32,9 @@ func InitDB(dsn string) (*gorm.DB, error) {
 	if count == 0 {
 		defaultTopic := []domain.Topic{
 			{Name: domain.Medicine},
-			{Name: domain.Vitamins},
-			{Name: domain.Microorganisms},
-			{Name: domain.Brands},
+			{Name: domain.Vitamin},
+			{Name: domain.Microorganism},
+			{Name: domain.Brand},
 		}
 		if err := db.Create(&defaultTopic).Error; err != nil {
 			log.Printf("failed to create default topic: %v", err)
@@ -44,6 +44,11 @@ func InitDB(dsn string) (*gorm.DB, error) {
 	}
 
 	err = db.AutoMigrate(&domain.Medicines{})
+	if err != nil {
+		log.Fatalf("Migration failed: %v", err)
+	}
+
+	err = db.AutoMigrate(&domain.Vitamins{})
 	if err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}

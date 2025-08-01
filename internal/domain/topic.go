@@ -5,10 +5,10 @@ import (
 )
 
 const (
-	Medicine       = "ยา"
-	Vitamins       = "วิตามิน"
-	Microorganisms = "จุลินทรีย์"
-	Brands         = "ยี่ห้อ"
+	Medicine      = "ยา"
+	Vitamin       = "วิตามิน"
+	Microorganism = "จุลินทรีย์"
+	Brand         = "ยี่ห้อ"
 )
 
 type Topic struct {

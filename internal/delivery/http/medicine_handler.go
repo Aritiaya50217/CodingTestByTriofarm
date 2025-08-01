@@ -46,8 +46,13 @@ func (h *MedicineHandler) CreateMedicine(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load topic"})
 		return
 	}
-
-	c.JSON(http.StatusCreated, medicine)
+	result := response.Reponse{
+		ID:      medicine.ID,
+		Name:    medicine.Name,
+		TopicID: medicine.TopicID,
+		Index:   medicine.Index,
+	}
+	c.JSON(http.StatusCreated, result)
 }
 
 func (h *MedicineHandler) GetAllMedicine(c *gin.Context) {
@@ -56,9 +61,9 @@ func (h *MedicineHandler) GetAllMedicine(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get medicines"})
 		return
 	}
-	var result []response.MedicineRes
+	var result []response.Reponse
 	for _, medicine := range medicines {
-		result = append(result, response.MedicineRes{
+		result = append(result, response.Reponse{
 			ID:      medicine.ID,
 			Name:    medicine.Name,
 			TopicID: medicine.TopicID,
