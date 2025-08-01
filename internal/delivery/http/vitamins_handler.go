@@ -16,6 +16,7 @@ type VitaminHandler struct {
 func NewVitaminHandler(r *gin.Engine, u usecase.VitaminUsecase, api *gin.RouterGroup) {
 	handler := &VitaminHandler{usecase: u}
 	api.POST("/vitamin", handler.CreateVitamin)
+	api.GET("/vitamins", handler.GetAllVitamin)
 }
 
 func (h *VitaminHandler) CreateVitamin(c *gin.Context) {
@@ -47,4 +48,23 @@ func (h *VitaminHandler) CreateVitamin(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, result)
+}
+
+func (h *VitaminHandler) GetAllVitamin(c *gin.Context) {
+	vitamins, err := h.usecase.GetAllVitamin()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get medicines"})
+		return
+	}
+	var result []response.Reponse
+	for _, vitamin := range vitamins {
+		result = append(result, response.Reponse{
+			ID:      vitamin.ID,
+			Name:    vitamin.Name,
+			TopicID: vitamin.TopicID,
+			Index:   vitamin.Index,
+		})
+	}
+	c.JSON(http.StatusOK, result)
+
 }

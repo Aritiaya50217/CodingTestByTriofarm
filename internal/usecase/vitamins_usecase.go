@@ -10,6 +10,7 @@ import (
 type VitaminUsecase interface {
 	CreateVitamin(vitamin *domain.Vitamins) error
 	GetMaxIndex() (int, error)
+	GetAllVitamin() ([]domain.Vitamins, error)
 }
 
 type vitaminUsecase struct {
@@ -32,4 +33,8 @@ func (u *vitaminUsecase) CreateVitamin(vitamin *domain.Vitamins) error {
 
 func (u *vitaminUsecase) GetMaxIndex() (int, error) {
 	return u.vitaminRepo.GetMaxIndex()
+}
+
+func (u *vitaminUsecase) GetAllVitamin() ([]domain.Vitamins, error) {
+	return u.vitaminRepo.GetAll()
 }

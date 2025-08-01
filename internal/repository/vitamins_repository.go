@@ -11,6 +11,7 @@ type VitaminRepository interface {
 	CreateVitamin(vitamin *domain.Vitamins) error
 	GetVitaminByName(name string) (*domain.Vitamins, error)
 	GetMaxIndex() (int, error)
+	GetAll() ([]domain.Vitamins, error)
 }
 
 type vitaminRepository struct {
@@ -49,4 +50,18 @@ func (r *vitaminRepository) GetMaxIndex() (int, error) {
 		return int(result.Int64), nil
 	}
 	return 0, nil
+}
+
+func (r *vitaminRepository) GetAll() ([]domain.Vitamins, error) {
+	var vitamins []domain.Vitamins
+
+	err := r.db.Model(&domain.Vitamins{}).
+		Select("id, name, topic_id,[index]").
+		Order("[index] ASC").
+		Find(&vitamins).Error
+	if err != nil {
+		return nil, err
+	}
+	return vitamins, nil
+
 }
