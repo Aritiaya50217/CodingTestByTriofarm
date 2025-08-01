@@ -17,6 +17,7 @@ func NewTopicHandler(r *gin.Engine, topicUsecase usecase.TopicUsecase, api *gin.
 	handler := &TopicHandler{topicUsecase: topicUsecase}
 	api.GET("/topics", handler.ListTopics)
 	api.POST("/topic", handler.CreateTopic)
+	api.POST("/topic/:id", handler.UpdateTopic)
 	api.DELETE("/topic/:id", handler.DeleteTopic)
 }
 
@@ -50,6 +51,43 @@ func (h *TopicHandler) CreateTopic(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, topic)
+}
+
+func (h *TopicHandler) UpdateTopic(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	// Bind JSON เข้ากับ struct
+	var topic domain.Topic
+	if err := c.ShouldBindJSON(&topic); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err = h.topicUsecase.GetTopicByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	topic.ID = id
+
+	if err := h.topicUsecase.UpdateTopic(&topic); err != nil {
+
+		if err.Error() == "name already exists" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update Topic"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Topic updated successfully"})
 }
 
 func (h *TopicHandler) DeleteTopic(c *gin.Context) {

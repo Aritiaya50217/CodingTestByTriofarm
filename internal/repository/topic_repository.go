@@ -11,6 +11,8 @@ type TopicRepository interface {
 	GetAll() ([]domain.Topic, error)
 	CreateTopic(topic *domain.Topic) error
 	GetTopicName(name string) (*domain.Topic, error)
+	UpdateTopic(topic *domain.Topic) error
+	GetTopicByID(id int) (*domain.Topic, error)
 	DeleteTopic(id uint) error
 }
 
@@ -35,6 +37,25 @@ func (r *topicRepository) CreateTopic(topic *domain.Topic) error {
 func (r *topicRepository) GetTopicName(name string) (*domain.Topic, error) {
 	var topic domain.Topic
 	err := r.db.Where("name = ?", name).First(&topic).Error
+	if err != nil {
+		return nil, err
+	}
+	return &topic, nil
+}
+
+func (r *topicRepository) UpdateTopic(topic *domain.Topic) error {
+	err := r.db.Model(&domain.Topic{}).
+		Where("id = ? ", topic.ID).
+		Updates(domain.Brands{Name: topic.Name}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *topicRepository) GetTopicByID(id int) (*domain.Topic, error) {
+	var topic domain.Topic
+	err := r.db.Where("id = ?", id).First(&topic).Error
 	if err != nil {
 		return nil, err
 	}
