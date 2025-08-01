@@ -14,6 +14,8 @@ type VitaminRepository interface {
 	GetAll() ([]domain.Vitamins, error)
 	UpdateVitamin(vitamin *domain.Vitamins) error
 	GetVitaminByID(id int) (*domain.Vitamins, error)
+	DeleteVitamin(id int) error
+	SwapVitamins(vitamin []domain.Vitamins) error
 }
 
 type vitaminRepository struct {
@@ -85,4 +87,23 @@ func (r *vitaminRepository) GetVitaminByID(id int) (*domain.Vitamins, error) {
 		return nil, err
 	}
 	return &vitamin, nil
+}
+
+func (r *vitaminRepository) DeleteVitamin(id int) error {
+	return r.db.Delete(&domain.Vitamins{}, id).Error
+}
+
+func (r *vitaminRepository) SwapVitamins(vitamins []domain.Vitamins) error {
+	tx := r.db.Begin()
+	for _, vitamin := range vitamins {
+		if err := tx.Model(&domain.Vitamins{}).
+			Where("id = ?", vitamin.ID).
+			Updates(domain.Vitamins{
+				Index: vitamin.Index,
+			}).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	return tx.Commit().Error
 }

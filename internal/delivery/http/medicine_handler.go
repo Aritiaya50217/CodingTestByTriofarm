@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
-	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/response"
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/usecase"
+	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -46,7 +46,7 @@ func (h *MedicineHandler) CreateMedicine(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to load topic"})
 		return
 	}
-	result := response.Reponse{
+	result := utils.Reponse{
 		ID:      medicine.ID,
 		Name:    medicine.Name,
 		TopicID: medicine.TopicID,
@@ -61,9 +61,9 @@ func (h *MedicineHandler) GetAllMedicine(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get medicines"})
 		return
 	}
-	var result []response.Reponse
+	var result []utils.Reponse
 	for _, medicine := range medicines {
-		result = append(result, response.Reponse{
+		result = append(result, utils.Reponse{
 			ID:      medicine.ID,
 			Name:    medicine.Name,
 			TopicID: medicine.TopicID,

@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
-	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/response"
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/usecase"
+	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +19,8 @@ func NewVitaminHandler(r *gin.Engine, u usecase.VitaminUsecase, api *gin.RouterG
 	api.POST("/vitamin", handler.CreateVitamin)
 	api.GET("/vitamins", handler.GetAllVitamin)
 	api.POST("/vitamin/:id", handler.UpdateVitamin)
+	api.DELETE("/vitamin/:id", handler.DeleteVitamin)
+	api.POST("/swap/vitamins", handler.SwapVitamins)
 }
 
 func (h *VitaminHandler) CreateVitamin(c *gin.Context) {
@@ -42,7 +44,7 @@ func (h *VitaminHandler) CreateVitamin(c *gin.Context) {
 		return
 	}
 
-	result := response.Reponse{
+	result := utils.Reponse{
 		ID:      vitamin.ID,
 		Name:    vitamin.Name,
 		TopicID: vitamin.TopicID,
@@ -58,9 +60,9 @@ func (h *VitaminHandler) GetAllVitamin(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get medicines"})
 		return
 	}
-	var result []response.Reponse
+	var result []utils.Reponse
 	for _, vitamin := range vitamins {
-		result = append(result, response.Reponse{
+		result = append(result, utils.Reponse{
 			ID:      vitamin.ID,
 			Name:    vitamin.Name,
 			TopicID: vitamin.TopicID,
@@ -105,4 +107,43 @@ func (h *VitaminHandler) UpdateVitamin(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Vitamin updated successfully"})
+}
+
+func (h *VitaminHandler) DeleteVitamin(c *gin.Context) {
+
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	_, err = h.usecase.GetVitaminByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = h.usecase.DeleteVitamin(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Vitamin deleted successfully"})
+}
+
+func (h *VitaminHandler) SwapVitamins(c *gin.Context) {
+	var vitamins []domain.Vitamins
+
+	if err := c.ShouldBindJSON(&vitamins); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := h.usecase.SwapVitamins(vitamins)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update vitamins"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Vitamins updated successfully"})
 }

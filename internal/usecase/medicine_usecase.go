@@ -5,6 +5,7 @@ import (
 
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/repository"
+	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/utils"
 )
 
 type MedicineUsecase interface {
@@ -66,19 +67,13 @@ func (u *medicineUsecase) DeleteMedicine(id int) error {
 }
 
 func (u *medicineUsecase) SwapMedicines(medicines []domain.Medicines) error {
-	if isDuplicateIndex(medicines) {
+	indexs := []int{}
+	for _, medicine := range medicines {
+		indexs = append(indexs, medicine.Index)
+	}
+	
+	if utils.IsDuplicateIndex(indexs) {
 		return errors.New("duplicate index values found")
 	}
 	return u.medicineRepo.SwapMedicines(medicines)
-}
-
-func isDuplicateIndex(medicines []domain.Medicines) bool {
-	indexMap := make(map[int]bool)
-	for _, medicine := range medicines {
-		if indexMap[medicine.Index] {
-			return true
-		}
-		indexMap[medicine.Index] = true
-	}
-	return false
 }

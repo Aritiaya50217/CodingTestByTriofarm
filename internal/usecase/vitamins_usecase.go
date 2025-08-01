@@ -5,6 +5,7 @@ import (
 
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/domain"
 	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/repository"
+	"github.com/Aritiaya50217/CodingTestByTriofarm/internal/utils"
 )
 
 type VitaminUsecase interface {
@@ -13,6 +14,8 @@ type VitaminUsecase interface {
 	GetAllVitamin() ([]domain.Vitamins, error)
 	UpdateVitamin(vitamin *domain.Vitamins) error
 	GetVitaminByID(id int) (*domain.Vitamins, error)
+	DeleteVitamin(id int) error
+	SwapVitamins(vitamin []domain.Vitamins) error
 }
 
 type vitaminUsecase struct {
@@ -52,4 +55,20 @@ func (u *vitaminUsecase) UpdateVitamin(vitamin *domain.Vitamins) error {
 
 func (u *vitaminUsecase) GetVitaminByID(id int) (*domain.Vitamins, error) {
 	return u.vitaminRepo.GetVitaminByID(id)
+}
+
+func (u *vitaminUsecase) DeleteVitamin(id int) error {
+	return u.vitaminRepo.DeleteVitamin(id)
+}
+
+func (u *vitaminUsecase) SwapVitamins(vitamins []domain.Vitamins) error {
+	indexs := []int{}
+	for _, vitamin := range vitamins {
+		indexs = append(indexs, vitamin.Index)
+	}
+
+	if utils.IsDuplicateIndex(indexs) {
+		return errors.New("duplicate index values found")
+	}
+	return u.vitaminRepo.SwapVitamins(vitamins)
 }
