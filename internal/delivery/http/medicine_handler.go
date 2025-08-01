@@ -20,6 +20,7 @@ func NewMedicineHandler(r *gin.Engine, u usecase.MedicineUsecase, api *gin.Route
 	api.GET("/medicines", handler.GetAllMedicine)
 	api.POST("/medicines/:id", handler.UpdateMedicine)
 	api.DELETE("/medicines/:id", handler.DeleteMedicine)
+	api.POST("/swap/medicines", handler.SwapMedicines)
 }
 
 func (h *MedicineHandler) CreateMedicine(c *gin.Context) {
@@ -141,4 +142,20 @@ func (h *MedicineHandler) DeleteMedicine(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Medicine deleted successfully"})
+}
+
+func (h *MedicineHandler) SwapMedicines(c *gin.Context) {
+	var medicines []domain.Medicines
+
+	if err := c.ShouldBindJSON(&medicines); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := h.usecase.SwapMedicines(medicines)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update medicines"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Medicines updated successfully"})
 }

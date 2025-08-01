@@ -15,6 +15,7 @@ type MedicineUsecase interface {
 	UpdateMedicine(medicine *domain.Medicines) error
 	GetMedicineByID(id int) (*domain.Medicines, error)
 	DeleteMedicine(id int) error
+	SwapMedicines(medicines []domain.Medicines) error
 }
 
 type medicineUsecase struct {
@@ -62,4 +63,22 @@ func (u *medicineUsecase) GetMedicineByID(id int) (*domain.Medicines, error) {
 
 func (u *medicineUsecase) DeleteMedicine(id int) error {
 	return u.medicineRepo.DeleteMedicine(id)
+}
+
+func (u *medicineUsecase) SwapMedicines(medicines []domain.Medicines) error {
+	if isDuplicateIndex(medicines) {
+		return errors.New("duplicate index values found")
+	}
+	return u.medicineRepo.SwapMedicines(medicines)
+}
+
+func isDuplicateIndex(medicines []domain.Medicines) bool {
+	indexMap := make(map[int]bool)
+	for _, medicine := range medicines {
+		if indexMap[medicine.Index] {
+			return true
+		}
+		indexMap[medicine.Index] = true
+	}
+	return false
 }

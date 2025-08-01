@@ -17,6 +17,7 @@ type MedicineRepository interface {
 	GetMedicineByName(name string) (*domain.Medicines, error)
 	GetMedicineByID(id int) (*domain.Medicines, error)
 	DeleteMedicine(id int) error
+	SwapMedicines(medicines []domain.Medicines) error
 }
 
 type medicineRepository struct {
@@ -100,4 +101,21 @@ func (r *medicineRepository) GetMedicineByID(id int) (*domain.Medicines, error) 
 
 func (r *medicineRepository) DeleteMedicine(id int) error {
 	return r.db.Delete(&domain.Medicines{}, id).Error
+}
+
+func (r *medicineRepository) SwapMedicines(medicines []domain.Medicines) error {
+	tx := r.db.Begin()
+
+	for _, medicine := range medicines {
+		if err := tx.Model(&domain.Medicines{}).
+			Where("id = ?", medicine.ID).
+			Updates(domain.Medicines{
+				Index: medicine.Index,
+			}).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+	}
+	return tx.Commit().Error
 }
