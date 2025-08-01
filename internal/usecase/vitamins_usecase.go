@@ -11,6 +11,8 @@ type VitaminUsecase interface {
 	CreateVitamin(vitamin *domain.Vitamins) error
 	GetMaxIndex() (int, error)
 	GetAllVitamin() ([]domain.Vitamins, error)
+	UpdateVitamin(vitamin *domain.Vitamins) error
+	GetVitaminByID(id int) (*domain.Vitamins, error)
 }
 
 type vitaminUsecase struct {
@@ -37,4 +39,17 @@ func (u *vitaminUsecase) GetMaxIndex() (int, error) {
 
 func (u *vitaminUsecase) GetAllVitamin() ([]domain.Vitamins, error) {
 	return u.vitaminRepo.GetAll()
+}
+
+func (u *vitaminUsecase) UpdateVitamin(vitamin *domain.Vitamins) error {
+	// check name
+	existingVitamin, err := u.vitaminRepo.GetVitaminByName(vitamin.Name)
+	if err == nil && existingVitamin != nil {
+		return errors.New("name already exists")
+	}
+	return u.vitaminRepo.UpdateVitamin(vitamin)
+}
+
+func (u *vitaminUsecase) GetVitaminByID(id int) (*domain.Vitamins, error) {
+	return u.vitaminRepo.GetVitaminByID(id)
 }
