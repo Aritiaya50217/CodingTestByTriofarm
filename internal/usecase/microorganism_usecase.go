@@ -10,6 +10,7 @@ import (
 type MicroorganismUsecase interface {
 	CreateMicroorganism(microorganism *domain.Microorganisms) error
 	GetMaxIndex() (int, error)
+	GetAllMicroorganism() ([]domain.Microorganisms, error)
 }
 
 type microorganismUsecase struct {
@@ -32,4 +33,8 @@ func (u *microorganismUsecase) CreateMicroorganism(microorganism *domain.Microor
 
 func (u *microorganismUsecase) GetMaxIndex() (int, error) {
 	return u.microorganismRepo.GetMaxIndex()
+}
+
+func (u *microorganismUsecase) GetAllMicroorganism() ([]domain.Microorganisms, error) {
+	return u.microorganismRepo.GetAll()
 }

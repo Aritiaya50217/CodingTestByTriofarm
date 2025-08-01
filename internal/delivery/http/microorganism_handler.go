@@ -16,6 +16,7 @@ type MicroorganismHandler struct {
 func NewMicroorganismHandler(r *gin.Engine, u usecase.MicroorganismUsecase, api *gin.RouterGroup) {
 	handler := &MicroorganismHandler{usecase: u}
 	api.POST("/microorganism", handler.CreateMicroorganism)
+	api.GET("/microorganisms", handler.GetAllMicroorganism)
 }
 
 func (h *MicroorganismHandler) CreateMicroorganism(c *gin.Context) {
@@ -44,4 +45,23 @@ func (h *MicroorganismHandler) CreateMicroorganism(c *gin.Context) {
 		Index:   microorganism.Index,
 	}
 	c.JSON(http.StatusCreated, result)
+}
+
+func (h *MicroorganismHandler) GetAllMicroorganism(c *gin.Context) {
+	microorganisms, err := h.usecase.GetAllMicroorganism()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get microorganisms"})
+		return
+	}
+
+	var result []utils.Reponse
+	for _, microorganism := range microorganisms {
+		result = append(result, utils.Reponse{
+			ID:      microorganism.ID,
+			Name:    microorganism.Name,
+			TopicID: microorganism.TopicID,
+			Index:   microorganism.Index,
+		})
+	}
+	c.JSON(http.StatusOK, result)
 }

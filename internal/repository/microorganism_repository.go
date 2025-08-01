@@ -11,6 +11,7 @@ type MicroorganismRepository interface {
 	CreateMicroorganism(microorganism *domain.Microorganisms) error
 	GetMicroorganismByName(name string) (*domain.Microorganisms, error)
 	GetMaxIndex() (int, error)
+	GetAll() ([]domain.Microorganisms, error)
 }
 
 type microorganismsRepository struct {
@@ -48,4 +49,18 @@ func (r *microorganismsRepository) GetMaxIndex() (int, error) {
 		return int(result.Int64), nil
 	}
 	return 0, nil
+}
+
+func (r *microorganismsRepository) GetAll() ([]domain.Microorganisms, error) {
+	var microorganisms []domain.Microorganisms
+
+	err := r.db.Model(&domain.Microorganisms{}).
+		Select("id, name, topic_id,[index]").
+		Order("[index] ASC").
+		Find(&microorganisms).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return microorganisms, nil
 }
