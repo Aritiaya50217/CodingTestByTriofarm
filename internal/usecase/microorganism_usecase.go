@@ -11,6 +11,8 @@ type MicroorganismUsecase interface {
 	CreateMicroorganism(microorganism *domain.Microorganisms) error
 	GetMaxIndex() (int, error)
 	GetAllMicroorganism() ([]domain.Microorganisms, error)
+	UpdateMicroorganism(microorganism *domain.Microorganisms) error
+	GetMicroorganismByID(id int) (*domain.Microorganisms, error)
 }
 
 type microorganismUsecase struct {
@@ -37,4 +39,17 @@ func (u *microorganismUsecase) GetMaxIndex() (int, error) {
 
 func (u *microorganismUsecase) GetAllMicroorganism() ([]domain.Microorganisms, error) {
 	return u.microorganismRepo.GetAll()
+}
+
+func (u *microorganismUsecase) UpdateMicroorganism(microorganism *domain.Microorganisms) error {
+	// check name
+	existingMicroorganisms, err := u.microorganismRepo.GetMicroorganismByName(microorganism.Name)
+	if err == nil && existingMicroorganisms != nil {
+		return errors.New("name already exists")
+	}
+	return u.microorganismRepo.UpdateMicroorganism(microorganism)
+}
+
+func (u *microorganismUsecase) GetMicroorganismByID(id int) (*domain.Microorganisms, error) {
+	return u.microorganismRepo.GetMicroorganismByID(id)
 }

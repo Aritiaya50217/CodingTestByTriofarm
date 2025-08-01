@@ -71,7 +71,7 @@ func (u *medicineUsecase) SwapMedicines(medicines []domain.Medicines) error {
 	for _, medicine := range medicines {
 		indexs = append(indexs, medicine.Index)
 	}
-	
+
 	if utils.IsDuplicateIndex(indexs) {
 		return errors.New("duplicate index values found")
 	}

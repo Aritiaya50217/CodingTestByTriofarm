@@ -12,6 +12,8 @@ type MicroorganismRepository interface {
 	GetMicroorganismByName(name string) (*domain.Microorganisms, error)
 	GetMaxIndex() (int, error)
 	GetAll() ([]domain.Microorganisms, error)
+	UpdateMicroorganism(microorganism *domain.Microorganisms) error
+	GetMicroorganismByID(id int) (*domain.Microorganisms, error)
 }
 
 type microorganismsRepository struct {
@@ -63,4 +65,21 @@ func (r *microorganismsRepository) GetAll() ([]domain.Microorganisms, error) {
 	}
 
 	return microorganisms, nil
+}
+
+func (r *microorganismsRepository) UpdateMicroorganism(microorganism *domain.Microorganisms) error {
+	err := r.db.Model(&domain.Microorganisms{}).Where("id = ? ", microorganism.ID).Updates(domain.Microorganisms{Name: microorganism.Name}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *microorganismsRepository) GetMicroorganismByID(id int) (*domain.Microorganisms, error) {
+	var microorganism domain.Microorganisms
+	err := r.db.Preload("Topic").Where("id = ?", id).First(&microorganism).Error
+	if err != nil {
+		return nil, err
+	}
+	return &microorganism, nil
 }
