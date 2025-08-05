@@ -54,7 +54,7 @@ func (h *BrandHandler) CreateBrand(c *gin.Context) {
 func (h *BrandHandler) GetAllBrand(c *gin.Context) {
 	brands, err := h.usecase.GetAll()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get microorganisms"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get brands"})
 		return
 	}
 
